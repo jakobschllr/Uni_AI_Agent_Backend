@@ -1,7 +1,7 @@
 import chromadb
 from chromadb.utils import embedding_functions
 
-COLLECTIONS_PATH = "/Users/jakobschiller/Desktop/Projekte/AI_Uni_Quiz/vector_database/collections/"
+COLLECTIONS_PATH = "/Users/jakobschiller/Desktop/Projekte/AI_Uni_Agent/backend/retrieval/collections"
 EMBED_MODEL = "all-MiniLM-L6-v2"
 
 class DatabaseHandler():
@@ -12,8 +12,8 @@ class DatabaseHandler():
         self.distance_function = "cosine" # Alternativen wäre z.B. Skalarprodukt
         self.embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=EMBED_MODEL)
 
-    def create_collection(self, user_id, collection_id) -> chromadb.Collection:
-        collection_name = user_id + "_" + collection_id
+    def create_collection(self, collection_id) -> chromadb.Collection:
+        collection_name = collection_id
         return self.persistent_client.create_collection(
             name= collection_name,
             metadata={"hnsw:space": self.distance_function},
@@ -26,9 +26,8 @@ class DatabaseHandler():
             ids=[f"id_{i}" for i in range(0, len(chunks))]
         )
         
-    def get_collection(self, user_id, collection_id) -> chromadb.Collection:
-        collection_name = user_id + "_" + collection_id
+    def get_collection(self, collection_id) -> chromadb.Collection:
         try:
-            return self.persistent_client.get_collection(collection_name)
+            return self.persistent_client.get_collection(collection_id)
         except ValueError as e:
             return None
